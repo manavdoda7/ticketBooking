@@ -36,12 +36,10 @@ const Client = db.define(
     },
   },
   {
-    // schema: "schemaName",
     tableName: "client",
   }
 );
 
-// `sequelize.define` also returns the model
 Client.sync().then(() => {
   console.log("client table created");
 }).catch((err)=>{

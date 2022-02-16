@@ -9,14 +9,17 @@ const checkAuth = async(req, res, next) => {
         token = req.headers.authorization.split(" ")[1]
     } catch(err) {
         console.log('Token fetch error', err);
-        res.status(404).json({success:false, error:"token not found"})
+        return res.status(404).json({success:false, error:"token not found"})
     }
     // console.log(token);
     try {
         const decode = jwt.verify(token, process.env.JWT_SECRET_USER)
         req.userData = decode
-        let user = await User.fetchUser(decode.email)
-        user = user.rows
+        let user = await User.findAll({
+            where:{
+                email:decode.email
+            }
+        })
         if(user.length==0) return res.status(400).json('You\'re not authorised.')
         next()
     } catch(err) {

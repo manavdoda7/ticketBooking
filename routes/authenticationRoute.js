@@ -4,14 +4,13 @@ const router = require('express').Router()
 const bcrypt = require('bcrypt');
 const Provider = require('../models/provider');
 const User = require('../models/client');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const passwordValidator = require('../validators/passwordValidator');
+const mobileValidator = require('../validators/mobileValidator');
 
 router.post('/provider/register', async(req, res)=>{
     console.log('POST /api/authenticate/provider/register request');
     const {email, password, firstName, lastName, organisation} = req.body
-    if(email==null|| email=='' || password==null || password=='' || firstName==null || firstName=='' || lastName==null || lastName=='' || organisation==null || organisation=='') {
-        return res.status(403).json({success:false, message:'One or more feilds is/are missing'})
-    }
     if(ValidateEmail(email)==false) {
         return res.status(403).json({success: false, message:'Invalid email ID'})
     }
@@ -20,6 +19,9 @@ router.post('/provider/register', async(req, res)=>{
     }
     if(nameValidator(organisation)==false) {
         return res.status(403).json({success:false, message:'Invalid organisation name entered.'})
+    }
+    if(passwordValidator(password)==false) {
+        return res.status(403).json({success:false, message:'Invalid password.'})
     }
     let duplicate
     try {
@@ -97,9 +99,6 @@ router.post('/provider/login', async(req, res)=>{
 router.post('/user/register', async(req, res)=>{
     console.log('POST /api/authenticate/user/register request');
     const {email, mobile, firstName, lastName, password} = req.body
-    if(email==null|| email=='' || password==null || password=='' || firstName==null || firstName=='' || lastName==null || lastName=='' || mobile==null || mobile=='') {
-        return res.status(403).json({success:false, message:'One or more feilds is/are missing'})
-    }
     if(ValidateEmail(email)==false) {
         return res.status(403).json({success: false, message:'Invalid email ID'})
     }
@@ -109,6 +108,8 @@ router.post('/user/register', async(req, res)=>{
     if(mobile.length<10) {
         return res.status(403).json({success:false, message:'Invalid mobile number entered.'})
     }
+    if(passwordValidator(password)==false) return res.status(403).json({success:false, message:'Invalid password.'})
+    if(mobileValidator(mobile)==false) return res.status(403).json({success:false, message:'Invalid mobile number.'})
     let duplicate
     try {
         duplicate = await User.findAll({

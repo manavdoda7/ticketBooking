@@ -13,7 +13,6 @@ const Booking = db.define(
           showID: {
             type: Sequelize.INTEGER,
             allowNull:false,
-            unique: true,
             references: {model:'show', key:'id'}
           },
           clientID: {
@@ -45,3 +44,5 @@ Booking.sync()
 }).catch((err) => {
     console.log('Error in creating bookings table.', err);
 })
+
+module.exports = Booking
