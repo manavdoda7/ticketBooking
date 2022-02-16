@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('client', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -77,7 +77,7 @@ module.exports = {
       }
     });
 
-    await queryInterface.createTable('shows', {
+    await queryInterface.createTable('show', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -126,7 +126,7 @@ module.exports = {
       }
     });
     
-    await queryInterface.createTable('bookings', {
+    await queryInterface.createTable('booking', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -137,12 +137,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull:false,
         unique: true,
-        references: {model:'shows', key:'id'}
+        references: {model:'show', key:'id'}
       },
       clientID: {
         type: Sequelize.STRING,
         allowNull:false,
-        references: {model:'users', key:'email'}
+        references: {model:'client', key:'email'}
       },
       seat: {
         type: Sequelize.INTEGER,
