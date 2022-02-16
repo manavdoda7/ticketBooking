@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon app.js"
+    "test": "nodemon app.js",
+    "migrate":"npx sequelize-cli db:migrate"
   },
   "repository": {
     "type": "git",
