@@ -6,7 +6,7 @@ const intValidator = require('../validators/intValidator')
 const router = require('express').Router()
 
 router.get('/shows', async(req, res)=>{
-    console.log('GET /api/user request')
+    console.log('GET /api/user/shows request')
     let shows
     try {
         shows = await Models.show.findAll({
@@ -43,7 +43,7 @@ router.get('/bookings', checkAuth, async(req, res)=>{
 router.get('/shows/:id', async(req, res)=>{
     const id = req.params.id
     if(intValidator(id)==false) return res.status(404).json({success:false, message:'Invalid showID'})
-    console.log(`GET /api/user/${id} request`)
+    console.log(`GET /api/user/shows/${id} request`)
     let shows
     try {
         shows = await Models.show.findAll({
@@ -67,7 +67,7 @@ router.get('/shows/:id', async(req, res)=>{
 router.get('/shows/slots/:slotID', async(req, res)=>{
     const slot_id = req.params.slotID
     if(intValidator(slot_id)==false) return res.status(404).json({success:false, message:'Invalid slot ID'})
-    console.log(`GET /api/user/shows/slot/${slot_id}`)
+    console.log(`GET /api/user/shows/slots/${slot_id}`)
     let showInfo
     let slotCheck
     try {
@@ -134,7 +134,7 @@ router.get('/shows/slots/:slotID', async(req, res)=>{
 router.post('/shows/slots/:id', checkAuth, async(req, res)=>{
     const id = req.params.id
     if(intValidator(id)==false) return res.status(404).json({success:false, message:'Invalid showID'})
-    console.log(`POST /api/user/${id} request`);
+    console.log(`POST /api/user/shows/slots/${id} request`);
     const client = req.userData.email
     const seats = req.body.seats
     let slotCheck
