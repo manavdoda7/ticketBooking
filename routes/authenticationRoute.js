@@ -4,13 +4,15 @@ const router = require('express').Router()
 const bcrypt = require('bcrypt');
 const Provider = require('../models/provider');
 const User = require('../models/client');
+const Models = require('../models/index');
 const jwt = require('jsonwebtoken');
 const passwordValidator = require('../validators/passwordValidator');
 const mobileValidator = require('../validators/mobileValidator');
+const intValidator = require('../validators/intValidator');
 
 router.post('/provider/register', async(req, res)=>{
     console.log('POST /api/authenticate/provider/register request');
-    const {email, password, firstName, lastName, organisation} = req.body
+    const {email, password, firstName, lastName, organisation, halls} = req.body
     if(ValidateEmail(email)==false) {
         return res.status(403).json({success: false, message:'Invalid email ID'})
     }
@@ -23,9 +25,12 @@ router.post('/provider/register', async(req, res)=>{
     if(passwordValidator(password)==false) {
         return res.status(403).json({success:false, message:'Invalid password.'})
     }
+    if(intValidator(halls)==false) {
+        return res.status(403).json({success:false, message:'Invalid hall numbers.'})
+    }
     let duplicate
     try {
-        duplicate = await Provider.findAll({
+        duplicate = await Models.provider.findAll({
             where:{
                 email:email
             }
@@ -44,7 +49,7 @@ router.post('/provider/register', async(req, res)=>{
     }
     // const provider = new Provider(email, encryptedPassword, firstName, lastName, organisation)
     try {
-        await Provider.create({email:email, firstName:firstName, lastName:lastName, password:encryptedPassword, org:organisation})
+        await Models.provider.create({email:email, firstName:firstName, lastName:lastName, password:encryptedPassword, org:organisation, halls:halls})
     } catch(err) {
         console.log('Error in saving to database', err)
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
@@ -60,7 +65,7 @@ router.post('/provider/login', async(req, res)=>{
     }
     let provider
     try {
-        provider = await Provider.findAll({
+        provider = await Models.provider.findAll({
             where:{
                 email:email
             }
@@ -112,7 +117,7 @@ router.post('/user/register', async(req, res)=>{
     if(mobileValidator(mobile)==false) return res.status(403).json({success:false, message:'Invalid mobile number.'})
     let duplicate
     try {
-        duplicate = await User.findAll({
+        duplicate = await Models.client.findAll({
             where:{
                 email:email
             }
@@ -133,7 +138,7 @@ router.post('/user/register', async(req, res)=>{
     }
     // const user = new User(email, encryptedPassword, firstName, lastName, mobile)
     try {
-        await User.create({email, password:encryptedPassword, firstName, lastName, mobile})
+        await Models.client.create({email, password:encryptedPassword, firstName, lastName, mobile})
     } catch(err) {
         console.log('Error in saving to database', err)
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
@@ -149,7 +154,7 @@ router.post('/user/login', async(req, res)=>{
     }
     let user
     try {
-        user = await User.findAll({
+        user = await Models.client.findAll({
             where:{
                 email:email
             }

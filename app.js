@@ -2,12 +2,6 @@ const express = require('express')
 const app = express()
 require('./middlewares/dbconnection')
 
-// Creating all the tables
-require('./models/booking')
-require('./models/client')
-require('./models/provider')
-require('./models/show')
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

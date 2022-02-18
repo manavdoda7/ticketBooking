@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Provider = require('../models/provider')
+const Provider = require('../models/index').provider
 const db = require('./dbconnection')
 require('dotenv').config()
 

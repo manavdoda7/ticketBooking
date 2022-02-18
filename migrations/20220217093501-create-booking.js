@@ -1,35 +1,33 @@
 'use strict';
+
+const show = require("../models/show");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('client', {
-      // Model attributes are defined here
+    await queryInterface.createTable('booking', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      email: {
-        type: Sequelize.STRING,
+      showID: {
         allowNull: false,
-        unique: true,
-        primaryKey:true
+        type: Sequelize.INTEGER,
+        references:{ model:"show", key:"id" }
       },
-      password: {
-        type: Sequelize.STRING,
+      clientID: {
         allowNull: false,
+        type: Sequelize.STRING,
+        references:{ model:"client", key:"email" }
       },
-      firstName: {
-        type: Sequelize.STRING,
+      seat: {
         allowNull: false,
+        type: Sequelize.INTEGER
       },
-      lastName: {
-        type: Sequelize.STRING,
+      begTime: {
         allowNull: false,
-      },
-      mobile: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: 'timestamp',
       },
       createdAt: {
         allowNull: false,
@@ -41,12 +39,10 @@ module.exports = {
       }
     },
     {
-      tableName: "client",
-    }
-  );
-
+      tableName:'booking'
+    });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('client');
+    await queryInterface.dropTable('booking');
   }
 };

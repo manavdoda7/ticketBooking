@@ -1,8 +1,7 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('client', {
-      // Model attributes are defined here
+    await queryInterface.createTable('provider', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,25 +10,29 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false,
         unique: true,
-        primaryKey:true
+        primaryKey: true,
+        allowNull:false
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       firstName: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       lastName: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
-      mobile: {
+      org: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
+      },
+      halls: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -41,12 +44,11 @@ module.exports = {
       }
     },
     {
-      tableName: "client",
+      tableName: "provider",
     }
-  );
-
+    );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('client');
+    await queryInterface.dropTable('provider');
   }
 };

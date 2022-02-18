@@ -1,48 +1,27 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const db = require("../middlewares/dbconnection");
-
-const Booking = db.define(
-    "booking",
-    {
-        id: {
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-            type: Sequelize.INTEGER
-          },
-          showID: {
-            type: Sequelize.INTEGER,
-            allowNull:false,
-            references: {model:'show', key:'id'}
-          },
-          clientID: {
-            type: Sequelize.STRING,
-            allowNull:false,
-            references: {model:'client', key:'email'}
-          },
-          seat: {
-            type: Sequelize.INTEGER,
-            allowNull:false
-          },
-          createdAt: {
-            allowNull: false,
-            type: Sequelize.DATE
-          },
-          updatedAt: {
-            allowNull: false,
-            type: Sequelize.DATE
-          }
-    },
-    {
-        tableName:"booking"
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Booking extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
     }
-)
-
-Booking.sync()
-.then(()=>{
-    console.log("Booking Table created")
-}).catch((err) => {
-    console.log('Error in creating bookings table.', err);
-})
-
-module.exports = Booking
+  }
+  Booking.init({
+    showID: DataTypes.INTEGER,
+    clientID: DataTypes.STRING,
+    seat: DataTypes.INTEGER,
+    begTime: 'timestamp'
+  }, {
+    sequelize,
+    modelName: 'booking',
+    tableName:'booking'
+  });
+  return Booking;
+};
