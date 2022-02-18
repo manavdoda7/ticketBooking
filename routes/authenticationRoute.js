@@ -9,10 +9,11 @@ const jwt = require('jsonwebtoken');
 const passwordValidator = require('../validators/passwordValidator');
 const mobileValidator = require('../validators/mobileValidator');
 const intValidator = require('../validators/intValidator');
+const intArrValidator = require('../validators/intArrValidator');
 
 router.post('/provider/register', async(req, res)=>{
     console.log('POST /api/authenticate/provider/register request');
-    const {email, password, firstName, lastName, organisation, halls} = req.body
+    const {email, password, firstName, lastName, organisation, halls, hallsCapacity} = req.body
     if(ValidateEmail(email)==false) {
         return res.status(403).json({success: false, message:'Invalid email ID'})
     }
@@ -27,6 +28,10 @@ router.post('/provider/register', async(req, res)=>{
     }
     if(intValidator(halls)==false) {
         return res.status(403).json({success:false, message:'Invalid hall numbers.'})
+    }
+    console.log('a');
+    if(hallsCapacity.length!=halls || intArrValidator(hallsCapacity)==false) {
+        return res.status(403).json({success:false, message:'Invalid halls array'})
     }
     let duplicate
     try {
@@ -47,13 +52,26 @@ router.post('/provider/register', async(req, res)=>{
         console.log('Password encryption error', err)
         return res.status(408).json({success:false, message:'Please try again after sometime'})
     }
+    console.log('b');
     // const provider = new Provider(email, encryptedPassword, firstName, lastName, organisation)
+    let arr=[]
+    for(i=0;i<hallsCapacity.length;i++) {
+        arr.push({hallNumber:i+1, seats:hallsCapacity[i], provider_id:email})
+    }
     try {
         await Models.provider.create({email:email, firstName:firstName, lastName:lastName, password:encryptedPassword, org:organisation, halls:halls})
     } catch(err) {
         console.log('Error in saving to database', err)
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
     }
+    console.log('c');
+    try {
+        await Models.hallsCapacity.bulkCreate(arr)
+    } catch(err) {
+        console.log('Error in saving halls array.', err);
+        return res.status(408).json({success:false, message: 'Please try again after sometime.'})
+    }
+    console.log('d');
     return res.status(200).json({success:true, message:'User registered'})
 }) 
 

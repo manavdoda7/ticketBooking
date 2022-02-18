@@ -1,32 +1,26 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('hallBooking', {
+    await queryInterface.createTable('hallsCapacity', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      show_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {model:'show', key:'id'},
-        onDelete: 'CASCADE',
-      },
-      begTime: {
-        allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.INTEGER
       },
       hallNumber: {
-        allowNull: false,
         type: Sequelize.INTEGER,
+        allowNull: false
       },
       provider_id: {
-        allowNull: false,
         type: Sequelize.STRING,
+        allowNull: false,
         references: {model:'provider', key:'email'},
-        onDelete: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      seats: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
@@ -38,11 +32,11 @@ module.exports = {
       }
     },
     {
-      tableName:'hallBooking',
+      tableName:'hallsCapacity'
     }
     );
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('hallBooking');
+    await queryInterface.dropTable('hallsCapacities');
   }
 };

@@ -11,12 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      console.log(models)
+      Show.belongsTo(models.provider, {foreignKey: 'provider_id', targetKey: 'email'})
+      models.provider.hasMany(Show, {foreignKey: 'provider_id', targetKey: 'email'})
     }
   }
   Show.init({
     name: DataTypes.STRING,
     info: DataTypes.STRING,
-    provider: DataTypes.STRING,
     duration: 'interval',
     rated: DataTypes.STRING,
     ratings: DataTypes.DOUBLE

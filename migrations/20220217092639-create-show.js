@@ -16,10 +16,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      provider: {
+      provider_id: {
         allowNull: false,
         type: Sequelize.STRING,
         references: { model: "provider", key: "email" },
+        onDelete: 'CASCADE',
       },
       duration: {
         allowNull: false,

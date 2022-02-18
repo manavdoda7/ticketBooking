@@ -11,13 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      HallBookings.belongsTo(models.show, {foreignKey:'show_id', targetKey:'id', constraints:false})
+      HallBookings.belongsTo(models.provider, {foreignKey:'provider_id', targetKey:'email',constraints:false})
+      models.show.hasMany(HallBookings, {foreignKey:'show_id', targetKey:'id',constraints:false})
+      models.provider.hasMany(HallBookings, {foreignKey:'provider_id', targetKey:'email',constraints:false})
     }
   }
   HallBookings.init({
-    showID: DataTypes.INTEGER,
     begTime: DataTypes.DATE,
     hallNumber: DataTypes.INTEGER,
-    provider: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'hallBooking',

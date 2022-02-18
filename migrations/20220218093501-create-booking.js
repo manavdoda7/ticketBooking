@@ -11,15 +11,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      showID: {
+      show_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        references:{ model:"show", key:"id" }
+        references:{ model:"show", key:"id" },
+        onDelete: 'CASCADE',
       },
-      clientID: {
+      client_id: {
         allowNull: false,
         type: Sequelize.STRING,
-        references:{ model:"client", key:"email" }
+        references:{ model:"client", key:"email" },
+        onDelete: 'CASCADE',
+      },
+      hallBooking_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references:{ model:"hallBooking", key:"id" },
+        onDelete: 'CASCADE',
       },
       seat: {
         allowNull: false,
