@@ -2,7 +2,7 @@ const checkAuth = require('../middlewares/userAuthentication')
 const Models = require('../models/index')
 const intArrValidator = require('../validators/intArrValidator')
 const intValidator = require('../validators/intValidator')
-
+const {Op} = require('sequelize')
 const router = require('express').Router()
 
 router.get('/shows', async(req, res)=>{
@@ -10,12 +10,23 @@ router.get('/shows', async(req, res)=>{
     let shows
     try {
         shows = await Models.show.findAll({
+            include:[{
+                association:'hallBookings',
+                attributes:[],
+                where:{
+                    begTime: {
+                        [Op.gte]: new Date(),
+                      }
+                }
+            }],
             attributes:['id', 'name', 'info', 'duration', 'ratings', 'rated', 'provider_id']
         })
     } catch(err) {
         console.log('Error in fetching shows', err);
         return res.status(408).json({success: false, message: 'Please try again after sometime.'})
     }
+    let filteredShows = []
+    const date = new Date()
     return res.status(200).json({success:true, shows:shows})
 })
 
@@ -61,7 +72,7 @@ router.get('/shows/:id', async(req, res)=>{
         return res.status(408).json({success: false, message: 'Please try again after sometime.'})
     }
     shows=shows[0]
-    return res.status(200).json({success:true, shows:shows})
+    return res.status(200).json({success:true, show:shows})
 })
 
 router.get('/shows/slots/:slotID', async(req, res)=>{
@@ -149,8 +160,25 @@ router.post('/shows/slots/:id', checkAuth, async(req, res)=>{
         console.log('Error in fetching slot.', err)
         return res.status(408).json({success:false, message: 'Please try again after sometime.'})
     }
-    if(intArrValidator(seats)==false) return res.status(403).json({success:false, message:'invalid array passed.'})
-    console.log(seats);
+    // console.log(slotCheck)
+    const {hallNumber, provider_id} = slotCheck.dataValues
+
+    if(intArrValidator(seats)==false) return res.status(206).json({success:false, message:'invalid array passed.'})
+    // console.log(hallNumber, provider_id);
+    let maxSeats
+    try {
+        maxSeats = await Models.hallsCapacity.findOne({
+            where:{
+                hallNumber:hallNumber,
+                provider_id:provider_id
+            }
+        })
+        maxSeats = maxSeats.dataValues.seats
+    } catch(err) {
+        console.log('Error in fetching hall capacity', err)
+        return res.status(408).json({success:false, message:'Please try again after sometime.'})
+    }
+    // console.log(maxSeats)
     let booked 
     try{
         booked = await Models.booking.findAll({
@@ -166,9 +194,10 @@ router.post('/shows/slots/:id', checkAuth, async(req, res)=>{
     for(i=0;i<booked.length;i++) {
         bookingSet.add(booked[i].dataValues.seat)
     }
-    console.log(booked)
-    console.log(bookingSet.size);
+    // console.log(booked)
+    // console.log(bookingSet.size);
     for(i=0;i<seats.length;i++) {
+        if(seats[i]>maxSeats || seats[i]<1) return res.status(206).json({success:false, message:'Invalid seat numbers selected.'})
         if(bookingSet.has(seats[i])) return res.status(408).json({success:false, message:`Seat ${seats[i]} is already booked.`})
         else bookingSet.add(seats[i])
     }
@@ -177,14 +206,14 @@ router.post('/shows/slots/:id', checkAuth, async(req, res)=>{
         let obj = {show_id:slotCheck.dataValues.show_id, hallBooking_id:slotCheck.dataValues.id, client_id:client, seat:seats[i], begTime:slotCheck.dataValues.begTime}
         arr.push(obj)
     }
-    console.log(arr);
+    // console.log(arr);
     try {
         await Models.booking.bulkCreate(arr)
     } catch(err) {
         console.log('Error in booking.', err);
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
     }
-    console.log(arr);
+    // console.log(arr);
     return res.status(201).json({success:true, message:'Tickets booked'})
 })
 

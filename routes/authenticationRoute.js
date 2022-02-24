@@ -15,23 +15,23 @@ router.post('/provider/register', async(req, res)=>{
     console.log('POST /api/authenticate/provider/register request');
     const {email, password, firstName, lastName, organisation, halls, hallsCapacity} = req.body
     if(ValidateEmail(email)==false) {
-        return res.status(403).json({success: false, message:'Invalid email ID'})
+        return res.status(206).json({success: false, message:'Invalid email ID'})
     }
     if(nameValidator(firstName)==false || nameValidator(lastName)==false) {
-        return res.status(403).json({success:false, message:'Invalid name entered.'})
+        return res.status(206).json({success:false, message:'Invalid name entered.'})
     }
     if(nameValidator(organisation)==false) {
-        return res.status(403).json({success:false, message:'Invalid organisation name entered.'})
+        return res.status(206).json({success:false, message:'Invalid organisation name entered.'})
     }
     if(passwordValidator(password)==false) {
-        return res.status(403).json({success:false, message:'Invalid password.'})
+        return res.status(206).json({success:false, message:'Invalid password.'})
     }
     if(intValidator(halls)==false) {
-        return res.status(403).json({success:false, message:'Invalid hall numbers.'})
+        return res.status(206).json({success:false, message:'Invalid hall numbers.'})
     }
     console.log('a');
     if(hallsCapacity.length!=halls || intArrValidator(hallsCapacity)==false) {
-        return res.status(403).json({success:false, message:'Invalid halls array'})
+        return res.status(206).json({success:false, message:'Invalid halls array'})
     }
     let duplicate
     try {
@@ -44,7 +44,7 @@ router.post('/provider/register', async(req, res)=>{
         console.log('Error in checking for the duplicates.', err);
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
     }
-    if(duplicate.length) return res.status(403).json({success:false, message:'You\'re already registered.'})
+    if(duplicate.length) return res.status(206).json({success:false, message:'You\'re already registered.'})
     let encryptedPassword
     try {
         encryptedPassword = await bcrypt.hash(password, 10)
@@ -123,16 +123,16 @@ router.post('/user/register', async(req, res)=>{
     console.log('POST /api/authenticate/user/register request');
     const {email, mobile, firstName, lastName, password} = req.body
     if(ValidateEmail(email)==false) {
-        return res.status(403).json({success: false, message:'Invalid email ID'})
+        return res.status(206).json({success: false, message:'Invalid email ID'})
     }
     if(nameValidator(firstName)==false || nameValidator(lastName)==false) {
-        return res.status(403).json({success:false, message:'Invalid name entered.'})
+        return res.status(206).json({success:false, message:'Invalid name entered.'})
     }
     if(mobile.length<10) {
-        return res.status(403).json({success:false, message:'Invalid mobile number entered.'})
+        return res.status(206).json({success:false, message:'Invalid mobile number entered.'})
     }
-    if(passwordValidator(password)==false) return res.status(403).json({success:false, message:'Invalid password.'})
-    if(mobileValidator(mobile)==false) return res.status(403).json({success:false, message:'Invalid mobile number.'})
+    if(passwordValidator(password)==false) return res.status(206).json({success:false, message:'Invalid password.'})
+    if(mobileValidator(mobile)==false) return res.status(206).json({success:false, message:'Invalid mobile number.'})
     let duplicate
     try {
         duplicate = await Models.client.findAll({
@@ -145,7 +145,7 @@ router.post('/user/register', async(req, res)=>{
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
     }
     if(duplicate.length) {
-        return res.status(403).json({success:false, message:'Email already exists.'})
+        return res.status(206).json({success:false, message:'Email already exists.'})
     }
     let encryptedPassword
     try {

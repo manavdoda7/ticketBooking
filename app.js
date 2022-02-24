@@ -3,7 +3,9 @@ const app = express()
 require('./middlewares/dbconnection')
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+var cors = require('cors')
 
+app.use(cors())
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

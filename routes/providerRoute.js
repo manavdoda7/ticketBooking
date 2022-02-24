@@ -1,6 +1,4 @@
 const checkAuth = require('../middlewares/providerAuthentication');
-// const Show = require('../models/show');
-// const Booking = require('../models/booking');
 const nameValidator = require('../validators/nameValidator');
 const timestampArrValidator = require('../validators/timestampArrValidator');
 const ratedValidator = require('../validators/ratingValidator');
@@ -16,14 +14,7 @@ router.post('/shows', checkAuth, async(req, res)=>{
     const provider_id = req.providerData.email
     // Will add validators to each here
     if(!(nameValidator(name)&&nameValidator(info)&&ratedValidator(rated)&&floatValidator(ratings)&&timestampArrValidator(timings)&&intArrValidator(halls)))
-        return res.status(403).json({success:false, message:'One or more feild values are incorrect.'})
-    let showDetails
-    try {
-        showDetails = await Models.show.create({name, info, provider_id, duration, rated, ratings})
-    } catch(err) {
-        console.log('Error in saving show.', err)
-        return res.status(408).json({success: false, message: 'Please try again after sometime.'})
-    }
+        return res.status(206).json({success:false, message:'One or more feild values are incorrect.'})
     let hallsCount
     try {
         hallsCount = await Models.provider.findAll({
@@ -35,9 +26,9 @@ router.post('/shows', checkAuth, async(req, res)=>{
     } catch(err) {
         console.log('Error in fetching halls',err);
     }
-    for(i=0;i<halls.length;i++) if(halls[i]>hallsCount||halls[i]<1) return res.status(403).json({success:false, message:`You have only ${hallsCount} halls.`})
+    for(i=0;i<halls.length;i++) if(halls[i]>hallsCount||halls[i]<1) return res.status(206).json({success:false, message:`You have only ${hallsCount} halls.`})
     // console.log(halls, timings)
-    if(halls.length!=timings.length) return res.status(403).json({success:false, message:'size of halls array should be equal to timings array.'})
+    if(halls.length!=timings.length) return res.status(206).json({success:false, message:'size of halls array should be equal to timings array.'})
     let showsAlreadyRegistered
     try{
         showsAlreadyRegistered = await Models.hallBooking.findAll({
@@ -53,16 +44,23 @@ router.post('/shows', checkAuth, async(req, res)=>{
     for(i=0;i<showsAlreadyRegistered.length;i++) {
         let parsed = Number(showsAlreadyRegistered[i].dataValues.begTime).toString()+showsAlreadyRegistered[i].dataValues.hallNumber
         set.add(parsed)
+        console.log(i, parsed)
     }
     for(i=0;i<timings.length;i++) {
-        let parsed = Number(Date.parse(timings[0])).toString()+halls[i]
-        if(Date.parse(timings[0])<new Date()) return res.status(403).json({success:false, message:'You can\'t book a show in past.'})
-        if(set.has(parsed)) return res.status(403).json({success:false, message:`Hall ${halls[i]} is already booked for ${timings[i]}`})
+        let parsed = Number(Date.parse(timings[i])).toString()+halls[i]
+        if(Date.parse(timings[i])<new Date()) return res.status(206).json({success:false, message:'You can\'t book a show in past.'})
+        if(set.has(parsed)) return res.status(206).json({success:false, message:`Hall ${halls[i]} is already booked for ${timings[i]}`})
         set.add(parsed)
+        console.log(i, parsed)
     }
-    // console.log(new Date())
-    // console.log(Date.parse(showsAlreadyRegistered[0].dataValues.begTime))
     let arr = []
+    let showDetails
+    try {
+        showDetails = await Models.show.create({name, info, provider_id, duration, rated, ratings})
+    } catch(err) {
+        console.log('Error in saving show.', err)
+        return res.status(408).json({success: false, message: 'Please try again after sometime.'})
+    }
     for(i=0;i<halls.length;i++) {
         let obj = {begTime:timings[i], hallNumber:halls[i], provider_id, show_id:showDetails.dataValues.id}
         arr.push(obj)
@@ -109,7 +107,7 @@ router.get('/shows/:id', checkAuth, async(req, res)=>{
         show = await Models.show.findAll({
             include:[{
                 association:'hallBookings',
-                attributes:['hallNumber','begTime']
+                attributes:['hallNumber','begTime', 'id']
             }],
             where:{
                 id:id,
@@ -122,18 +120,40 @@ router.get('/shows/:id', checkAuth, async(req, res)=>{
         return res.status(408).json({success: false, message:'Please try again after sometime.'})
     }
     if(show.length==0) return res.status(404).json({success:false, message:'Following show either doesn\'t exist or doesn\'t belong to you.'})
+    return res.status(200).json({success:true, message:'Successful', show: show[0]})
+})
+
+router.get('/shows/slot/:id', checkAuth, async(req, res)=> {
+    const id = req.params.id
+    console.log('GET /user/shows/slots/'+id+' request')
+    try {
+        let slot = await Models.hallBooking.findOne({
+            where: {
+                id:id
+            }
+        })
+        if(slot.dataValues.provider_id!=req.providerData.email) return res.status(403).json({success:false, message:'Forbidden'})
+    } catch(err) {
+        console.log('Error in fetching show slots.', err);
+        return res.status(408).json({success:false, message:'Please try again after sometime.'})
+    }
     let bookings
     try{
         bookings = await Models.booking.findAll({
+            include:{
+                association:'client',
+                attributes:['email', 'firstName', 'lastName', 'mobile']
+            },
+            attributes:['id', 'seat'],
             where:{
-                show_id:id
+                hallBooking_id:id
             }
         })
     } catch(err) {
         console.log('Error in fetching bookings.', err);
         return res.status(408).json({success:false, message:'Please try again after sometime.'})
     }
-    return res.status(200).json({success:true, message:'Successful', show: show[0], bookings:bookings})
+    return res.status(200).json({success:true, bookings:bookings})
 })
 
 router.delete('/shows/:id', checkAuth, async(req, res)=>{
@@ -147,7 +167,7 @@ router.delete('/shows/:id', checkAuth, async(req, res)=>{
             }
         })
         if(shows.length==0 || shows[0].provider_id!=req.providerData.email) {
-            return res.status(403).json({success:false, message:'Following show either doesn\'t exist or doesn\'t belong to you.'})
+            return res.status(206).json({success:false, message:'Following show either doesn\'t exist or doesn\'t belong to you.'})
         }
     } catch(err) {
         console.log(`Error in fetching show`, err);
