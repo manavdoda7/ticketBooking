@@ -11,6 +11,115 @@ const mobileValidator = require('../validators/mobileValidator');
 const intValidator = require('../validators/intValidator');
 const intArrValidator = require('../validators/intArrValidator');
 
+/**
+ * @swagger
+ * /:
+ *  get:
+ *      tags: ["Testing Route"]
+ *      parameters: []
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/authenticate/provider/register:
+ *  post:
+ *      tags: ["Authentication Routes"]
+ *      summary: "Route for registering a new provider."
+ *      description: "Register for a new provider here."
+ *      parameters:
+ *        - name: body
+ *          in: body
+ *          description: "Provider details"
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *                  firstName:
+ *                      type: string
+ *                  lastName:
+ *                      type: string
+ *                  org:
+ *                      type: string
+ *                  halls:
+ *                      type: integer
+ *                  hallsCapacity:
+ *                      type: array
+ *                      items:
+ *                          type: integer
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/authenticate/provider/login:
+ *  post:
+ *      tags: ["Authentication Routes"]
+ *      summary: "Route for provider login."
+ *      description: "Enter email and password to login"
+ *      parameters:
+ *        - name: body
+ *          in: body
+ *          description: "Provider details"
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/authenticate/user/register:
+ *  post:
+ *      tags: ["Authentication Routes"]
+ *      summary: "Route for registering a new user."
+ *      description: "Register for a new user here."
+ *      parameters:
+ *        - name: body
+ *          in: body
+ *          description: "User details"
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *                  firstName:
+ *                      type: string
+ *                  lastName:
+ *                      type: string
+ *                  org:
+ *                      type: string
+ *                  mobile:
+ *                      type: string
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/authenticate/user/login:
+ *  post:
+ *      tags: ["Authentication Routes"]
+ *      summary: "Route for user login."
+ *      description: "Enter email and password to login"
+ *      parameters:
+ *        - name: body
+ *          in: body
+ *          description: "User details"
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ */
+
 router.post('/provider/register', async(req, res)=>{
     console.log('POST /api/authenticate/provider/register request');
     const {email, password, firstName, lastName, organisation, halls, hallsCapacity} = req.body

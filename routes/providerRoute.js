@@ -8,6 +8,80 @@ const router = require('express').Router()
 const Models = require('../models/index');
 const intArrValidator = require('../validators/intArrValidator');
 
+/**
+ * @swagger
+ * /api/provider/shows:
+ *  get:
+ *      tags: ["Provider Routes"]
+ *      summary: "Route to get all the shows of a provider"
+ *      description: "Provider is identified by the header passed"
+ *      parameters: []
+ *      responses: []
+ *  post:
+ *      tags: ["Provider Routes"]
+ *      summary: "Route to create a new show"
+ *      description: "Provider is identified uniquely by token."
+ *      parameters:
+ *        - name: body
+ *          in: body
+ *          description: "Enter show Details here"
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  info:
+ *                      type: string
+ *                  timings:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                  halls:
+ *                      type: array
+ *                      items:
+ *                          type: integer
+ *                  duration:
+ *                      type: string
+ *                  rated:
+ *                      type: string
+ *                  ratings:
+ *                      type: number
+ *          responses: []
+ * /shows/{id}:
+ *  get:
+ *      tags: ["Provider Routes"]
+ *      summary: "Route for getting details about a particular show."
+ *      description: "Authentication is done by header."
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          required: true
+ *          type: string
+ *      responses: []
+ *  delete:
+ *      tags: ["Provider Routes"]
+ *      summary: "Route for deleting a show."
+ *      description: "Authentication is done by header."
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          required: true
+ *          type: string
+ *      responses: []
+ * /shows/slot/:id:
+ *  get:
+ *      tags: ["Provider Routes"]
+ *      summary: "Route for fetching bookings of a particular slot."
+ *      description: "Authentication is done by header"
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          required: true
+ *          type: string
+ *      responses: []
+ */
+
 router.post('/shows', checkAuth, async(req, res)=>{
     console.log('POST /api/provider/show request');
     const {name, info, duration, rated, ratings, halls, timings} = req.body

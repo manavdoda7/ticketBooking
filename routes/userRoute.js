@@ -5,6 +5,76 @@ const intValidator = require('../validators/intValidator')
 const {Op} = require('sequelize')
 const router = require('express').Router()
 
+/**
+ * @swagger
+ * /api/user/shows:
+ *  get:
+ *      tags: ["User Routes"]
+ *      parameters: []
+ *      summary: "Route for viewing all the shows."
+ *      description: "All the shows are listed here."
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/user/bookings:
+ *  get:
+ *      tags: ["User Routes"]
+ *      summary: "Route for viewing all the bookings of the user"
+ *      description: "Authentication Header is required."
+ *      parameters: []
+ *      responses: []
+ * /api/user/shows/{id}:
+ *  get:
+ *      tags: ["User Routes"]
+ *      summary: "Route for viewing details of a particular show."
+ *      description: "All the slots are listed here."
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: ID of the show.
+ *          required: true
+ *          type: string
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ * /api/user/shows/slots/{id}:
+ *  get:
+ *      tags: ["User Routes"]
+ *      summary: "Route for viewing slot details of a particular show"
+ *      description: "All the details of a show such as seat matrix are available here."
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: "ID of the slot."
+ *          required: true
+ *          type: string
+ *      responses: []
+ *      security:
+ *          bearerAuth: []
+ *  post:
+ *      tags: ["User Routes"]
+ *      summary: "Route for booking seats."
+ *      parameters:
+ *        - name: id
+ *          in: path
+ *          description: "ID of the slot."
+ *          required: true
+ *          type: string
+ *        - name: body
+ *          in: body
+ *          description: "Array of seats"
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  seats:
+ *                      type: array
+ *                      items:
+ *                          type: integer
+ *      responses: []
+ *      
+ */
+
 router.get('/shows', async(req, res)=>{
     console.log('GET /api/user/shows request')
     let shows
