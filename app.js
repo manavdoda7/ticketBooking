@@ -4,7 +4,7 @@ require("./middlewares/dbconnection");
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 var cors = require("cors");
-
+require('dotenv').config()
 app.use(cors());
 
 app.use(express.json());
@@ -56,6 +56,6 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found." });
 });
 
-app.listen(5000, () => {
+app.listen(process.env.PORT, () => {
   console.log("App listening at port 5000");
 });
